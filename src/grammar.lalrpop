@@ -1,0 +1,41 @@
+use crate::ast::dml::*;
+
+grammar;
+
+Comma<T>: Vec<T> = {
+    <mut v:(<T> ",")*> <e:T?> => match e {
+        None=> v,
+        Some(e) => {
+            v.push(e);
+            v
+        }
+    }
+};
+
+Semicolon<T>: Vec<T> = {
+    <mut v:(<T> ";")*> <e:T?> => match e {
+        None=> v,
+        Some(e) => {
+            v.push(e);
+            v
+        }
+    }
+};
+
+pub Exprs = Semicolon<Expr>;
+
+Expr: SelectNode = {
+    "select" <fields: Fields> "from" <result_table: ResultTable> => SelectNode{
+        fields,
+        result_table,
+    }
+}
+
+pub Fields = Comma<Field>;
+
+pub Field: Field = {
+    "*" => Field::All,
+    r"[0-9a-zA-Z_.]+" => Field::Name(<>.into())
+};
+
+ResultTable: String = r"[0-9a-zA-Z_.]+" => <>.into();

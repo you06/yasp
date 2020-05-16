@@ -3,7 +3,11 @@ name = "yasp"
 version = "0.1.0"
 authors = ["you06 <you1474600@gmail.com>"]
 edition = "2018"
+build = "build.rs" # LALRPOP preprocessing
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[build-dependencies]
+lalrpop = {version="0.19.0", features = ["lexer"]}
 
 [dependencies]
+lalrpop-util = "0.19.0"
+regex = "1"
