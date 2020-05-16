@@ -10,7 +10,7 @@ pub enum Field {
     All,
 }
 
-impl fmt::Debug for Field {
+impl fmt::Display for Field {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Field::Name(name) => write!(f, "{}", name),
@@ -24,12 +24,12 @@ pub struct SelectNode {
     pub result_table: String,
 }
 
-impl fmt::Debug for SelectNode {
+impl fmt::Display for SelectNode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "select ")?;
         let l = self.fields.len();
         for index in 0..l {
-            write!(f, "{:?}", self.fields[index])?;
+            write!(f, "{}", self.fields[index])?;
             if index == l - 1 {
                 break;
             }
