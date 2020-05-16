@@ -29,13 +29,15 @@ Expr: SelectNode = {
         fields,
         result_table,
     }
-}
+};
+
+Name: String = r"[0-9a-zA-Z_.]+" => <>.into();
 
 pub Fields = Comma<Field>;
 
 pub Field: Field = {
     "*" => Field::All,
-    r"[0-9a-zA-Z_.]+" => Field::Name(<>.into())
+    Name => Field::Name(<>.into())
 };
 
-ResultTable: String = r"[0-9a-zA-Z_.]+" => <>.into();
+ResultTable = Name;

@@ -20,6 +20,9 @@ fn main() {
     let exprs = grammar::ExprsParser::new()
         .parse("select * from sakura; select rin, shizuku, * from uta")
         .unwrap();
-    println!("exprs: {:?}", exprs);
+
+    for expr in exprs {
+        println!("expr: {}", expr);
+    }
 }
 ```
