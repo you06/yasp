@@ -33,7 +33,7 @@ impl fmt::Display for SelectNode {
             if index == l - 1 {
                 break;
             }
-            write!(f, "{}", ",")?;
+            write!(f, ",")?;
         }
         write!(f, " from {}", self.result_table)?;
         Ok(())
