@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::ast::{ast::*, dml::*, model::*};
+    use crate::ast::{dml::*, model::*};
     use crate::*;
 
     #[test]
