@@ -55,12 +55,12 @@ mod tests {
             }
         );
 
-        let ci_str: CIStr = "Rin".into();
+        let ci_str: CIStr = "SaKuRa_uTa".into();
         assert_eq!(
             ci_str,
             CIStr {
-                l: "rin".into(),
-                o: "Rin".into(),
+                l: "sakura_uta".into(),
+                o: "SaKuRa_uTa".into(),
             }
         );
     }
