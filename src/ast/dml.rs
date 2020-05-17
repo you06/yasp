@@ -1,3 +1,4 @@
+use super::{ast::*, model::*};
 use std::fmt;
 
 #[allow(dead_code)]
@@ -5,23 +6,10 @@ pub enum DMLNode {
     Select(SelectNode),
 }
 
-pub enum Field {
-    Name(String),
-    All,
-}
-
-impl fmt::Display for Field {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Field::Name(name) => write!(f, "{}", name),
-            Field::All => write!(f, "*"),
-        }
-    }
-}
-
+#[derive(Debug, Eq, PartialEq)]
 pub struct SelectNode {
     pub fields: Vec<Field>,
-    pub result_table: String,
+    pub result_table: CIStr,
 }
 
 impl fmt::Display for SelectNode {

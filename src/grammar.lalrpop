@@ -1,4 +1,8 @@
-use crate::ast::dml::*;
+use crate::ast::{
+    ast::*,
+    dml::*,
+    model::*
+};
 
 grammar;
 
@@ -24,20 +28,21 @@ Semicolon<T>: Vec<T> = {
 
 pub Exprs = Semicolon<Expr>;
 
-Expr: SelectNode = {
+pub Expr: SelectNode = {
     "select" <fields: Fields> "from" <result_table: ResultTable> => SelectNode{
         fields,
         result_table,
     }
 };
 
-Name: String = r"[0-9a-zA-Z_.]+" => <>.into();
+Name: CIStr = r"[0-9a-zA-Z_]+" => <>.into();
 
 pub Fields = Comma<Field>;
 
 pub Field: Field = {
-    "*" => Field::All,
-    Name => Field::Name(<>.into())
+    "*" => Field::new_all(),
+    Name => Field::new_column(<>),
+    <table: Name>"."<column: Name> => Field::new_column(column).with_table(table),
 };
 
 ResultTable = Name;
