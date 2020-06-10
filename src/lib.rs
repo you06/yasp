@@ -1,7 +1,5 @@
-mod ast;
 mod tests;
-
-#[macro_use]
-extern crate lalrpop_util;
-
-lalrpop_mod!(#[allow(clippy::all)] pub grammar);
+#[allow(unused_imports)]
+use yasp_ast;
+#[allow(unused_imports)]
+use yasp_lexer;

@@ -1,5 +1,6 @@
-use crate::ast::{
+use yasp_ast::{
     dml::*,
+    expr::*,
     model::*
 };
 
@@ -27,12 +28,20 @@ Semicolon<T>: Vec<T> = {
 
 pub Exprs = Semicolon<Expr>;
 
-pub Expr: SelectNode = {
-    "select" <fields: Fields> "from" <result_table: ResultTable> => SelectNode{
+pub Expr: Expr = {
+    "select" <fields: Fields> "from" <result_table: ResultTable> => Expr::Select(SelectNode{
         fields,
         result_table,
-    }
+    })
 };
+
+// Name: CIStr = {
+//     r"(?i)select" => { "select"; },
+//     <value:"identifier"> => { value.into() },
+//     // <r"[0-9a-zA-Z.]+"> => <>.into()
+// };
+    // r"(?i)select" => { "select" },
+    // r"[0-9a-zA-Z.]+" => <>.into()
 
 Name: CIStr = r"[0-9a-zA-Z_]+" => <>.into();
 
