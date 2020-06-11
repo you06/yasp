@@ -1,16 +1,20 @@
-num = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ (^"e" ~ int)? }
-    int = { ("+" | "-")? ~ ASCII_DIGIT+ }
+expr = { 
+    select_stmt
+}
 
-operation = _{ add | subtract | multiply | divide | power }
-    add      = { "+" }
-    subtract = { "-" }
-    multiply = { "*" }
-    divide   = { "/" }
-    power    = { "^" }
+keyword = _{
+    select |
+    from
+}
+    select = _{ ^"select" }
+    from = _{ ^"from" }
 
-expr = { term ~ (operation ~ term)* }
-term = _{ num | "(" ~ expr ~ ")" }
-
-calculation = _{ SOI ~ expr ~ EOI }
+name = { ASCII_ALPHANUMERIC+ }
+    column_name = @{ name }
+    table_name = @{ name }
 
 WHITESPACE = _{ " " | "\t" }
+
+select_stmt = { select ~ column_name ~ from ~ table_name }
+
+expressions = { SOI ~ expr ~ EOI }

@@ -15,7 +15,7 @@ mod tests {
 
     #[test]
     fn test_parse() {
-        let pairs = SQLLexer::parse(Rule::expr, "1 + 2 + 3");
+        let pairs = SQLLexer::parse(Rule::expressions, "select e from v");
         println!("{:?}", pairs);
     }
 }
