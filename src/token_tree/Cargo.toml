@@ -1,8 +1,0 @@
-[package]
-name = "yasp_token_tree"
-version = "0.1.0"
-authors = ["you06 <you1474600@gmail.com>"]
-edition = "2018"
-
-[lib]
-path = "token_tree.rs"
