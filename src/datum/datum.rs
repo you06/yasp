@@ -126,7 +126,7 @@ mod tests {
     #[test]
     fn test_format() {
 		let datum = Datum::from_i64("123");
-		assert_eq!(datum, Datum{kind: Kind::KindInt64(123)});
+		assert_eq!(datum, Datum{kind: Kind::Int64(123)});
 		assert_eq!(format!("{}", datum), "123");
 	}
 }
