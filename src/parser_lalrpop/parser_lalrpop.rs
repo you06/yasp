@@ -5,6 +5,7 @@ use crate::parsers::grammar::{ExprParser,ExprsParser, Token};
 use lalrpop_util::{ParseError};
 
 mod parsers {
+    #[allow(clippy::all)]
     pub mod grammar;
 }
 
@@ -15,18 +16,26 @@ fn lalrpop_err(e: ParseError<usize, Token, &str>) -> Error {
     Error::new(format!("parse error: {:?}", e))
 }
 
-pub fn parse_expr<T: ToString>(sql: T) -> Result<Expr> {
-    let sql = sql.to_string();
-    let parser = ExprParser::new();
-    let ast = parser.parse(&sql);
-    let ast = ast.map_err(lalrpop_err)?;
-    Ok(ast)
-}
+pub struct Parser;
 
-pub fn parse<T: ToString>(sql: T) -> Result<Exprs> {
-    let sql = sql.to_string();
-    let parser = ExprsParser::new();
-    let ast = parser.parse(&sql);
-    let ast = ast.map_err(lalrpop_err)?;
-    Ok(ast)
+impl Parser {
+    pub fn new() -> Self {
+        Parser{}
+    }
+
+    pub fn parse_expr<T: ToString>(&self, sql: T) -> Result<Expr> {
+        let sql = sql.to_string();
+        let parser = ExprParser::new();
+        let ast = parser.parse(&sql);
+        let ast = ast.map_err(lalrpop_err)?;
+        Ok(ast)
+    }
+
+    pub fn parse<T: ToString>(&self, sql: T) -> Result<Exprs> {
+        let sql = sql.to_string();
+        let parser = ExprsParser::new();
+        let ast = parser.parse(&sql);
+        let ast = ast.map_err(lalrpop_err)?;
+        Ok(ast)
+    }
 }

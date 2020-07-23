@@ -45,9 +45,9 @@ pub Expr: Expr = {
 
 Name: CIStr = r"[0-9a-zA-Z_]+" => <>.into();
 
-pub Fields = Comma<Field>;
+Fields = Comma<Field>;
 
-pub Field: Field = {
+Field: Field = {
     "*" => Field::new_all(),
     Name => Field::new_column(<>),
     <table: Name>"."<column: Name> => Field::new_column(column).with_table(table),

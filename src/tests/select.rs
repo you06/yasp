@@ -1,11 +1,13 @@
 #[cfg(test)]
 mod tests {
     use yasp_ast::{dml::*, expr::*, model::*};
-    use yasp_parser_lalrpop::{parse, parse_expr};
+    use yasp_parser_lalrpop::Parser;
 
     #[test]
     fn test_select() {
-        let expr1 = parse_expr("select * from sakura").unwrap();
+        let parser = Parser::new();
+
+        let expr1 = parser.parse_expr("select * from sakura").unwrap();
         assert_eq!(
             expr1,
             Expr::Select(SelectNode {
@@ -19,7 +21,9 @@ mod tests {
         );
         assert_eq!(&format!("{}", expr1), "select * from sakura");
 
-        let expr2 = parse_expr("select Sakura.ShiZuKu, rin, * from Sakura").unwrap();
+        let expr2 = parser
+            .parse_expr("select Sakura.ShiZuKu, rin, * from Sakura")
+            .unwrap();
         assert_eq!(
             expr2,
             Expr::Select(SelectNode {
@@ -60,8 +64,9 @@ mod tests {
             "select Sakura.ShiZuKu,rin,* from Sakura"
         );
 
-        let exprs =
-            parse("select * from sakura;    select Sakura.ShiZuKu, rin, * from Sakura").unwrap();
+        let exprs = parser
+            .parse("select * from sakura;    select Sakura.ShiZuKu, rin, * from Sakura")
+            .unwrap();
         assert_eq!(exprs, vec![expr1, expr2]);
     }
 }

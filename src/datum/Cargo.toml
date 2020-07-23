@@ -1,0 +1,13 @@
+[package]
+name = "yasp_datum"
+description = "Datum trait & default implement definitions for the YASP"
+version = "0.1.0"
+edition = "2018"
+authors = ["you06 <you1474600@gmail.com>"]
+
+[lib]
+path = "datum.rs"
+
+[dependencies]
+chrono = "0.4"
+humantime = "2.0.1"
