@@ -1,3 +1,4 @@
 /target
 Cargo.lock
-src/parser_lalrpop/grammar.rs
+src/parser_lalrpop/parsers/grammar.rs
+.DS_Store

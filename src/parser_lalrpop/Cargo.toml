@@ -12,6 +12,7 @@ path = "parser_lalrpop.rs"
 
 [dependencies]
 yasp_ast = { path = "../ast" }
+yasp_error = { path = "../error" }
 
 regex = "1"
 lalrpop-util = "0.19.0"
@@ -20,4 +21,4 @@ lalrpop-util = "0.19.0"
 lalrpop = "0.19.0"
 
 [dev-dependencies]
-yasp_lexer = { path = "../lexer" }
+yasp_ast = { path = "../ast" }

@@ -9,5 +9,5 @@ lalrpop = {version="0.19.0", features = ["lexer"]}
 
 [dependencies]
 yasp_ast = { path = "./src/ast" }
-yasp_lexer = { path = "./src/lexer" }
+yasp_error = { path = "./src/error" }
 yasp_parser_lalrpop = { path = "./src/parser_lalrpop" }
