@@ -1,0 +1,24 @@
+[package]
+name = "yasp_parser_lalrpop"
+description = "LALRPOP definitions for the YASP"
+version = "0.1.0"
+edition = "2018"
+authors = ["you06 <you1474600@gmail.com>"]
+
+build = "build.rs" # LALRPOP preprocessing
+
+[lib]
+path = "parser_lalrpop.rs"
+
+[dependencies]
+yasp_ast = { path = "../ast" }
+yasp_error = { path = "../error" }
+
+regex = "1"
+lalrpop-util = "0.19.0"
+
+[build-dependencies]
+lalrpop = "0.19.0"
+
+[dev-dependencies]
+yasp_ast = { path = "../ast" }

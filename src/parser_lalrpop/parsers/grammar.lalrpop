@@ -1,0 +1,56 @@
+use yasp_ast::{
+    dml::*,
+    expr::*,
+    model::*
+};
+
+grammar;
+
+Comma<T>: Vec<T> = {
+    <mut v:(<T> ",")*> <e:T?> => match e {
+        None=> v,
+        Some(e) => {
+            v.push(e);
+            v
+        }
+    }
+};
+
+Semicolon<T>: Vec<T> = {
+    <mut v:(<T> ";")*> <e:T?> => match e {
+        None=> v,
+        Some(e) => {
+            v.push(e);
+            v
+        }
+    }
+};
+
+pub Exprs = Semicolon<Expr>;
+
+pub Expr: Expr = {
+    "select" <fields: Fields> "from" <result_table: ResultTable> => Expr::Select(SelectNode{
+        fields,
+        result_table,
+    })
+};
+
+// Name: CIStr = {
+//     r"(?i)select" => { "select"; },
+//     <value:"identifier"> => { value.into() },
+//     // <r"[0-9a-zA-Z.]+"> => <>.into()
+// };
+    // r"(?i)select" => { "select" },
+    // r"[0-9a-zA-Z.]+" => <>.into()
+
+Name: CIStr = r"[0-9a-zA-Z_]+" => <>.into();
+
+Fields = Comma<Field>;
+
+Field: Field = {
+    "*" => Field::new_all(),
+    Name => Field::new_column(<>),
+    <table: Name>"."<column: Name> => Field::new_column(column).with_table(table),
+};
+
+ResultTable = Name;
