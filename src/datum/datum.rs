@@ -1,7 +1,7 @@
 use chrono::{DateTime, Duration, Utc};
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 
-pub trait DatumTrait: Display + Debug {
+pub trait DatumTrait: Display + Debug + Clone {
     fn null() -> Self;
     fn from_i64(raw: &str) -> Self;
     fn from_u64(raw: &str) -> Self;
@@ -14,7 +14,7 @@ pub trait DatumTrait: Display + Debug {
     fn restore(&self) -> &str;
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 enum Kind {
     Null,
     Int64(i64),
@@ -37,7 +37,7 @@ enum Kind {
     // MysqlJSON,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Datum {
     kind: Kind,
 }

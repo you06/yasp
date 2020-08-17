@@ -12,6 +12,7 @@ path = "parser_lalrpop.rs"
 
 [dependencies]
 yasp_ast = { path = "../ast" }
+yasp_datum = { path = "../datum" }
 yasp_error = { path = "../error" }
 
 regex = "1"

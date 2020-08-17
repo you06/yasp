@@ -1,16 +1,17 @@
 #[cfg(test)]
 mod tests {
     use yasp_ast::{dml::*, expr::*, model::*};
+    use yasp_datum::Datum;
     use yasp_parser_lalrpop::Parser;
 
     #[test]
     fn test_select() {
-        let parser = Parser::new();
+        let parser = Parser::<Datum>::new();
 
         let expr1 = parser.parse_expr("select * from sakura").unwrap();
         assert_eq!(
             expr1,
-            Expr::Select(SelectNode {
+            Expr::Select(SelectStmt {
                 fields: vec![Field {
                     all: true,
                     table: None,
@@ -26,7 +27,7 @@ mod tests {
             .unwrap();
         assert_eq!(
             expr2,
-            Expr::Select(SelectNode {
+            Expr::Select(SelectStmt {
                 fields: vec![
                     Field {
                         all: false,
@@ -61,7 +62,7 @@ mod tests {
         );
         assert_eq!(
             &format!("{}", expr2),
-            "select Sakura.ShiZuKu,rin,* from Sakura"
+            "select Sakura.ShiZuKu, rin, * from Sakura"
         );
 
         let exprs = parser

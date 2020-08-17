@@ -3,8 +3,9 @@ use yasp_ast::{
     expr::*,
     model::*
 };
+use yasp_datum::DatumTrait;
 
-grammar;
+grammar<F> where F: DatumTrait;
 
 match {
     r"(?i)select" => "SELECT",
@@ -38,20 +39,12 @@ FROM: &'input str = "FROM" => <>;
 
 pub Exprs = Semicolon<Expr>;
 
-pub Expr: Expr = {
-    SELECT <fields: Fields> FROM <result_table: ResultTable> => Expr::Select(SelectNode{
+pub Expr: Expr<F> = {
+    SELECT <fields: Fields> FROM <result_table: ResultTable> => Expr::<F>::Select(SelectStmt{
         fields,
         result_table,
     })
 };
-
-// Name: CIStr = {
-//     r"(?i)select" => { "select"; },
-//     <value:"identifier"> => { value.into() },
-//     // <r"[0-9a-zA-Z.]+"> => <>.into()
-// };
-    // r"(?i)select" => { "select" },
-    // r"[0-9a-zA-Z.]+" => <>.into()
 
 Name: CIStr = r"\w+" => <>.into();
 
