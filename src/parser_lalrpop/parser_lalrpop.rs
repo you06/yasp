@@ -1,8 +1,8 @@
-use yasp_error::{Result, Error};
-use yasp_ast::expr::{Expr};
-use crate::parsers::grammar::{ExprParser,ExprsParser, Token};
+use crate::parsers::grammar::{ExprParser, ExprsParser, Token};
+use yasp_ast::expr::Expr;
+use yasp_error::{Error, Result};
 
-use lalrpop_util::{ParseError};
+use lalrpop_util::ParseError;
 
 mod parsers {
     #[allow(clippy::all)]
@@ -20,7 +20,7 @@ pub struct Parser;
 
 impl Parser {
     pub fn new() -> Self {
-        Parser{}
+        Parser {}
     }
 
     pub fn parse_expr<T: ToString>(&self, sql: T) -> Result<Expr> {
