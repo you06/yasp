@@ -1,19 +1,30 @@
 use yasp_ast::{
-    dml::*,
-    expr::*,
-    model::*
+    dml,
+    expr,
+    model
 };
 use yasp_datum::DatumTrait;
 
-grammar<F> where F: DatumTrait;
+grammar<T> where T: DatumTrait;
 
 match {
     r"(?i)select" => "SELECT",
     r"(?i)from" => "FROM",
+    r"(?i)update" => "UPDATE",
+    r"(?i)set" => "SET",
 } else {
     _
 }
 
+/// operators
+EQ: &'input str = "=" => <>;
+/// keywords
+SELECT: &'input str = "SELECT" => <>;
+FROM: &'input str = "FROM" => <>;
+UPDATE: &'input str = "UPDATE" => <>;
+SET: &'input str = "SET" => <>;
+
+/// seperators
 Comma<T>: Vec<T> = {
     <mut v:(<T> ",")*> <e:T?> => match e {
         None=> v,
@@ -34,26 +45,51 @@ Semicolon<T>: Vec<T> = {
     }
 };
 
-SELECT: &'input str = "SELECT" => <>;
-FROM: &'input str = "FROM" => <>;
+/// basic identities
+Name: &'input str = r"\w+" => <>;
 
-pub Exprs = Semicolon<Expr>;
+CIStr: model::CIStr = Name => <>.into();
+Table = CIStr;
+Column = CIStr;
 
-pub Expr: Expr<F> = {
-    SELECT <fields: Fields> FROM <result_table: ResultTable> => Expr::<F>::Select(SelectStmt{
-        fields,
-        result_table,
-    })
+Field: dml::Field = {
+    "*" => dml::Field::new_all(),
+    Column => dml::Field::new_column(<>),
+    <table: Table>"."<column: Column> => dml::Field::new_column(column).with_table(table),
 };
-
-Name: CIStr = r"\w+" => <>.into();
 
 Fields = Comma<Field>;
 
-Field: Field = {
-    "*" => Field::new_all(),
-    Name => Field::new_column(<>),
-    <table: Name>"."<column: Name> => Field::new_column(column).with_table(table),
+Assignment: dml::Assignment<T> = <field: Field> EQ <expr: AssignExpr> => dml::Assignment{
+    field,
+    expr,
 };
 
-ResultTable = Name;
+Assignments = Comma<Assignment>;
+
+AssignExpr: expr::Expr<T> = {
+    Datum,
+    SelectStmt
+};
+
+/// expressions
+pub Exprs = Semicolon<Expr>;
+
+pub Expr: expr::Expr<T> = {
+    Datum,
+    SelectStmt,
+    UpdateStmt
+};
+
+Datum: expr::Expr<T> = Name => expr::Expr::<T>::Datum(T::from_raw(<>));
+
+SelectStmt: expr::Expr<T> = SELECT <fields: Fields> FROM <result_table: Table> => expr::Expr::<T>::Select(dml::SelectStmt{
+    fields,
+    result_table,
+});
+
+UpdateStmt: expr::Expr<T> = UPDATE <table: Table> SET <list: Assignments> => expr::Expr::<T>::Update(dml::UpdateStmt{
+    list,
+    table,
+});
+

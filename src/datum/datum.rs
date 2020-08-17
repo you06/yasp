@@ -1,21 +1,30 @@
 use chrono::{DateTime, Duration, Utc};
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 
+/// If you want use your own `Datum` struct, implement this trait
 pub trait DatumTrait: Display + Debug + Clone {
     fn null() -> Self;
-    fn from_i64(raw: &str) -> Self;
-    fn from_u64(raw: &str) -> Self;
-    fn from_f32(raw: &str) -> Self;
-    fn from_f64(raw: &str) -> Self;
+    fn from_i64(num: i64) -> Self;
+    fn from_f64(num: f64) -> Self;
     fn from_string(raw: &str) -> Self;
     fn from_duration(raw: &str) -> Self;
     fn from_time(raw: &str) -> Self;
     fn from_bytes(raw: &str) -> Self;
-    fn restore(&self) -> &str;
+    /// from_raw will parse raw string into specific type
+    /// overwrite it at your own risk
+    fn from_raw(raw: &str) -> Self {
+        if let Ok(num) = raw.parse::<i64>() {
+            return Self::from_i64(num);
+        }
+        if let Ok(num) = raw.parse::<f64>() {
+            return Self::from_f64(num);
+        }
+        Self::from_string(raw)
+    }
 }
 
 #[derive(Debug, PartialEq, Clone)]
-enum Kind {
+pub enum Kind {
     Null,
     Int64(i64),
     Uint64(u64),
@@ -39,7 +48,7 @@ enum Kind {
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Datum {
-    kind: Kind,
+    pub kind: Kind,
 }
 
 impl DatumTrait for Datum {
@@ -47,33 +56,13 @@ impl DatumTrait for Datum {
         Self { kind: Kind::Null }
     }
 
-    fn from_i64(raw: &str) -> Self {
-        let raw = raw.to_string();
-        let num = raw.parse::<i64>().unwrap();
+    fn from_i64(num: i64) -> Self {
         Self {
             kind: Kind::Int64(num),
         }
     }
 
-    fn from_u64(raw: &str) -> Self {
-        let raw = raw.to_string();
-        let num = raw.parse::<u64>().unwrap();
-        Self {
-            kind: Kind::Uint64(num),
-        }
-    }
-
-    fn from_f32(raw: &str) -> Self {
-        let raw = raw.to_string();
-        let num = raw.parse::<f32>().unwrap();
-        Self {
-            kind: Kind::Float32(num),
-        }
-    }
-
-    fn from_f64(raw: &str) -> Self {
-        let raw = raw.to_string();
-        let num = raw.parse::<f64>().unwrap();
+    fn from_f64(num: f64) -> Self {
         Self {
             kind: Kind::Float64(num),
         }
@@ -109,10 +98,6 @@ impl DatumTrait for Datum {
             kind: Kind::Bytes(bytes),
         }
     }
-
-    fn restore(&self) -> &str {
-        ""
-    }
 }
 
 impl Display for Datum {
@@ -141,7 +126,7 @@ mod tests {
 
     #[test]
     fn test_format_i64() {
-        let datum = Datum::from_i64("123");
+        let datum = Datum::from_raw("123");
         assert_eq!(
             datum,
             Datum {
@@ -151,14 +136,14 @@ mod tests {
         assert_eq!(format!("{}", datum), "123");
     }
     #[test]
-    fn test_format_u64() {
-        let datum = Datum::from_u64("1926");
+    fn test_format_f64() {
+        let datum = Datum::from_raw("1926.8");
         assert_eq!(
             datum,
             Datum {
-                kind: Kind::Uint64(1926)
+                kind: Kind::Float64(1926.8)
             }
         );
-        assert_eq!(format!("{}", datum), "1926");
+        assert_eq!(format!("{}", datum), "1926.8");
     }
 }

@@ -89,7 +89,7 @@ pub struct UpdateStmt<T: DatumTrait> {
 
 impl<T: DatumTrait> fmt::Display for UpdateStmt<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "update {} set", self.table)?;
+        write!(f, "update {} set ", self.table)?;
         let l = self.list.len();
         for i in 0..l {
             if i != 0 {
