@@ -140,7 +140,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_format() {
+    fn test_format_i64() {
         let datum = Datum::from_i64("123");
         assert_eq!(
             datum,
@@ -149,5 +149,16 @@ mod tests {
             }
         );
         assert_eq!(format!("{}", datum), "123");
+    }
+    #[test]
+    fn test_format_u64() {
+        let datum = Datum::from_u64("1926");
+        assert_eq!(
+            datum,
+            Datum {
+                kind: Kind::Uint64(1926)
+            }
+        );
+        assert_eq!(format!("{}", datum), "1926");
     }
 }
