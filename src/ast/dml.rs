@@ -6,7 +6,7 @@ pub enum DMLNode {
     Select(SelectNode),
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct SelectNode {
     pub fields: Vec<Field>,
     pub result_table: CIStr,
@@ -28,7 +28,7 @@ impl fmt::Display for SelectNode {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Field {
     pub all: bool,
     pub table: Option<CIStr>,

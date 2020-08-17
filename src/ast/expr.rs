@@ -1,7 +1,7 @@
 use super::dml::SelectNode;
 use std::fmt;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Expr {
     Select(SelectNode),
     UnKnown,

@@ -64,9 +64,12 @@ mod tests {
             "select Sakura.ShiZuKu,rin,* from Sakura"
         );
 
-        let exprs = parser
-            .parse("select * from sakura;    select Sakura.ShiZuKu, rin, * from Sakura")
-            .unwrap();
+        let exprs =
+            parser.parse("select * from sakura;    select Sakura.ShiZuKu, rin, * from Sakura").unwrap();
+        assert_eq!(exprs, vec![expr1.clone(), expr2.clone()]);
+
+        let exprs =
+            parser.parse("SeLecT * fRom sakura;    sElect Sakura.ShiZuKu, rin, * FroM Sakura").unwrap();
         assert_eq!(exprs, vec![expr1, expr2]);
     }
 }

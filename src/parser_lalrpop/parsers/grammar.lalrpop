@@ -6,6 +6,13 @@ use yasp_ast::{
 
 grammar;
 
+match {
+    r"(?i)select" => "SELECT",
+    r"(?i)from" => "FROM",
+} else {
+    _
+}
+
 Comma<T>: Vec<T> = {
     <mut v:(<T> ",")*> <e:T?> => match e {
         None=> v,
@@ -26,10 +33,13 @@ Semicolon<T>: Vec<T> = {
     }
 };
 
+SELECT: &'input str = "SELECT" => <>;
+FROM: &'input str = "FROM" => <>;
+
 pub Exprs = Semicolon<Expr>;
 
 pub Expr: Expr = {
-    "select" <fields: Fields> "from" <result_table: ResultTable> => Expr::Select(SelectNode{
+    SELECT <fields: Fields> FROM <result_table: ResultTable> => Expr::Select(SelectNode{
         fields,
         result_table,
     })
@@ -43,7 +53,7 @@ pub Expr: Expr = {
     // r"(?i)select" => { "select" },
     // r"[0-9a-zA-Z.]+" => <>.into()
 
-Name: CIStr = r"[0-9a-zA-Z_]+" => <>.into();
+Name: CIStr = r"\w+" => <>.into();
 
 Fields = Comma<Field>;
 
