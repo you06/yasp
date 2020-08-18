@@ -1,34 +1,9 @@
+use super::expr::Expr;
 use super::model::*;
 use std::fmt;
+use yasp_datum::DatumTrait;
 
-#[allow(dead_code)]
-pub enum DMLNode {
-    Select(SelectNode),
-}
-
-#[derive(Debug, Eq, PartialEq)]
-pub struct SelectNode {
-    pub fields: Vec<Field>,
-    pub result_table: CIStr,
-}
-
-impl fmt::Display for SelectNode {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "select ")?;
-        let l = self.fields.len();
-        for index in 0..l {
-            write!(f, "{}", self.fields[index])?;
-            if index == l - 1 {
-                break;
-            }
-            write!(f, ",")?;
-        }
-        write!(f, " from {}", self.result_table)?;
-        Ok(())
-    }
-}
-
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Field {
     pub all: bool,
     pub table: Option<CIStr>,
@@ -67,6 +42,60 @@ impl fmt::Display for Field {
         }
         if let Some(column) = &self.column {
             write!(f, "{}", column)?;
+        }
+        Ok(())
+    }
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
+pub struct Assignment<T: DatumTrait> {
+    pub field: Field,
+    pub expr: Expr<T>,
+}
+
+impl<T: DatumTrait> fmt::Display for Assignment<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}={}", self.field, self.expr)?;
+        Ok(())
+    }
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
+pub struct SelectStmt {
+    pub fields: Vec<Field>,
+    pub result_table: CIStr,
+}
+
+impl fmt::Display for SelectStmt {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "select ")?;
+        let l = self.fields.len();
+        for i in 0..l {
+            if i != 0 {
+                write!(f, ", ")?;
+            }
+            write!(f, "{}", self.fields[i])?;
+        }
+        write!(f, " from {}", self.result_table)?;
+        Ok(())
+    }
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
+pub struct UpdateStmt<T: DatumTrait> {
+    pub list: Vec<Assignment<T>>,
+    pub table: CIStr,
+}
+
+impl<T: DatumTrait> fmt::Display for UpdateStmt<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "update {} set ", self.table)?;
+        let l = self.list.len();
+        for i in 0..l {
+            if i != 0 {
+                write!(f, ", ")?;
+            }
+            write!(f, "{}", self.list[i])?;
         }
         Ok(())
     }

@@ -1,6 +1,6 @@
 use std::error::Error as StdError;
+use std::fmt::{self, Debug, Display, Formatter};
 use std::result::Result as StdResult;
-use std::fmt::{self, Display, Debug, Formatter};
 
 pub struct Error(Box<ErrorInner>);
 
@@ -11,7 +11,8 @@ struct ErrorInner {
 
 impl Error {
     pub fn new<K>(kind: K) -> Error
-    where K: Display + Send + Sync + 'static
+    where
+        K: Display + Send + Sync + 'static,
     {
         Error(Box::new(ErrorInner {
             kind: Box::new(kind),
@@ -20,8 +21,9 @@ impl Error {
     }
 
     pub fn from_source<E, K>(source: E, kind: K) -> Error
-    where E: StdError + Send + Sync + 'static,
-            K: Display + Send + Sync + 'static
+    where
+        E: StdError + Send + Sync + 'static,
+        K: Display + Send + Sync + 'static,
     {
         Error(Box::new(ErrorInner {
             kind: Box::new(kind),
