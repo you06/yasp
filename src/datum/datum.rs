@@ -10,7 +10,7 @@ pub trait DatumTrait: Display + Debug + Clone {
     fn from_duration(raw: &str) -> Self;
     fn from_time(raw: &str) -> Self;
     fn from_bytes(raw: &str) -> Self;
-    /// from_raw will parse raw string into specific type
+    /// `from_raw` will parse raw string into specific type
     /// overwrite it at your own risk
     fn from_raw(raw: &str) -> Self {
         if let Ok(num) = raw.parse::<i64>() {
