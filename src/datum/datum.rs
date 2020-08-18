@@ -3,16 +3,29 @@ use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 
 /// If you want use your own `Datum` struct, implement this trait
 pub trait DatumTrait: Display + Debug + Clone {
-    fn null() -> Self;
+    fn from_null() -> Self;
     fn from_i64(num: i64) -> Self;
     fn from_f64(num: f64) -> Self;
-    fn from_string(raw: &str) -> Self;
-    fn from_duration(raw: &str) -> Self;
-    fn from_time(raw: &str) -> Self;
-    fn from_bytes(raw: &str) -> Self;
+    fn from_string(s: &str) -> Self;
+    fn from_duration(d: std::time::Duration) -> Self;
+    fn from_time(t: DateTime<Utc>) -> Self;
     /// `from_raw` will parse raw string into specific type
     /// overwrite it at your own risk
     fn from_raw(raw: &str) -> Self {
+        let l = raw.len();
+        println!("raw: {}, l: {}", raw, l);
+        if raw.chars().nth(0 as usize).unwrap() == '"'
+            && raw.chars().nth((l - 1) as usize).unwrap() == '"'
+        {
+            let inner = &raw[1..l - 1];
+            if let Ok(d) = inner.parse::<humantime::Duration>() {
+                return Self::from_duration(d.into());
+            }
+            if let Ok(t) = inner.parse::<DateTime<Utc>>() {
+                return Self::from_time(t);
+            }
+            return Self::from_string(inner);
+        }
         if let Ok(num) = raw.parse::<i64>() {
             return Self::from_i64(num);
         }
@@ -27,11 +40,11 @@ pub trait DatumTrait: Display + Debug + Clone {
 pub enum Kind {
     Null,
     Int64(i64),
-    Uint64(u64),
-    Float32(f32),
+    // Uint64(u64),
+    // Float32(f32),
     Float64(f64),
     String(String),
-    Bytes(Vec<u8>),
+    // Bytes(Vec<u8>),
     // BinaryLiteral,
     // MysqlDecimal,
     MysqlDuration(Duration),
@@ -52,7 +65,7 @@ pub struct Datum {
 }
 
 impl DatumTrait for Datum {
-    fn null() -> Self {
+    fn from_null() -> Self {
         Self { kind: Kind::Null }
     }
 
@@ -68,36 +81,31 @@ impl DatumTrait for Datum {
         }
     }
 
-    fn from_string(raw: &str) -> Self {
-        let raw = raw.to_string();
+    fn from_string(s: &str) -> Self {
         Self {
-            kind: Kind::String(raw),
+            kind: Kind::String(s.to_owned()),
         }
     }
 
-    fn from_duration(raw: &str) -> Self {
-        let raw = raw.to_string();
-        let duration: std::time::Duration = raw.parse::<humantime::Duration>().unwrap().into();
-        let duration = Duration::from_std(duration).unwrap();
+    fn from_duration(d: std::time::Duration) -> Self {
+        let duration = Duration::from_std(d).unwrap();
         Self {
             kind: Kind::MysqlDuration(duration),
         }
     }
 
-    fn from_time(raw: &str) -> Self {
-        let raw = raw.to_string();
-        let time = raw.parse::<DateTime<Utc>>().unwrap();
+    fn from_time(t: DateTime<Utc>) -> Self {
         Self {
-            kind: Kind::MysqlTime(time),
+            kind: Kind::MysqlTime(t),
         }
     }
 
-    fn from_bytes(raw: &str) -> Self {
-        let bytes = raw.as_bytes().to_vec();
-        Self {
-            kind: Kind::Bytes(bytes),
-        }
-    }
+    // fn from_bytes(raw: &str) -> Self {
+    //     let bytes = raw.as_bytes().to_vec();
+    //     Self {
+    //         kind: Kind::Bytes(bytes),
+    //     }
+    // }
 }
 
 impl Display for Datum {
@@ -105,16 +113,16 @@ impl Display for Datum {
         match &self.kind {
             Kind::Null => write!(f, "NULL"),
             Kind::Int64(i) => write!(f, "{}", *i),
-            Kind::Uint64(i) => write!(f, "{}", *i),
-            Kind::Float32(i) => write!(f, "{}", *i),
+            // Kind::Uint64(i) => write!(f, "{}", *i),
+            // Kind::Float32(i) => write!(f, "{}", *i),
             Kind::Float64(i) => write!(f, "{}", *i),
-            Kind::String(i) => write!(f, "{}", *i),
-            Kind::Bytes(bytes) => {
-                let byte_str = String::from_utf8(bytes.clone()).expect("convert to string error");
-                write!(f, "{}", byte_str)
-            }
-            Kind::MysqlDuration(d) => write!(f, "{}", *d),
-            Kind::MysqlTime(d) => write!(f, "{}", *d),
+            Kind::String(i) => write!(f, "\"{}\"", *i),
+            // Kind::Bytes(bytes) => {
+            //     let byte_str = String::from_utf8(bytes.clone()).expect("convert to string error");
+            //     write!(f, "{}", byte_str)
+            // }
+            Kind::MysqlDuration(d) => write!(f, "\"{}\"", *d),
+            Kind::MysqlTime(d) => write!(f, "\"{}\"", *d),
         }?;
         Ok(())
     }

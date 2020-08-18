@@ -9,7 +9,7 @@ mod tests {
         let parser = Parser::<Datum>::new();
 
         let expr1 = parser
-            .parse_expr("update sakura set rin=7, shizuku = 13")
+            .parse_expr("update sakura set rin=7, shizuku = \"13\"")
             .unwrap();
         assert_eq!(
             expr1,
@@ -25,12 +25,15 @@ mod tests {
                     Assignment {
                         field: Field::new_column("shizuku".into()),
                         expr: Expr::Datum(Datum {
-                            kind: Kind::Int64(13),
+                            kind: Kind::String("13".to_owned()),
                         }),
                     }
                 ],
             })
         );
-        assert_eq!(&format!("{}", expr1), "update sakura set rin=7, shizuku=13");
+        assert_eq!(
+            &format!("{}", expr1),
+            "update sakura set rin=7, shizuku=\"13\""
+        );
     }
 }

@@ -12,6 +12,7 @@ match {
     r"(?i)from" => "FROM",
     r"(?i)update" => "UPDATE",
     r"(?i)set" => "SET",
+    r"(?i)null" => "NULL",
 } else {
     _
 }
@@ -23,6 +24,7 @@ SELECT: &'input str = "SELECT" => <>;
 FROM: &'input str = "FROM" => <>;
 UPDATE: &'input str = "UPDATE" => <>;
 SET: &'input str = "SET" => <>;
+NULL: &'input str = "NULL" => <>;
 
 /// seperators
 Comma<T>: Vec<T> = {
@@ -46,7 +48,10 @@ Semicolon<T>: Vec<T> = {
 };
 
 /// basic identities
-Name: &'input str = r"\w+" => <>;
+Name: &'input str = {
+    r"\w+" => <>,
+    r#""\w+""# => <>,
+}
 
 CIStr: model::CIStr = Name => <>.into();
 Table = CIStr;
@@ -78,10 +83,13 @@ pub Exprs = Semicolon<Expr>;
 pub Expr: expr::Expr<T> = {
     Datum,
     SelectStmt,
-    UpdateStmt
+    UpdateStmt,
 };
 
-Datum: expr::Expr<T> = Name => expr::Expr::<T>::Datum(T::from_raw(<>));
+Datum: expr::Expr<T> = {
+    NULL => expr::Expr::<T>::Datum(T::from_null()),
+    Name => expr::Expr::<T>::Datum(T::from_raw(<>)),
+};
 
 SelectStmt: expr::Expr<T> = SELECT <fields: Fields> FROM <result_table: Table> => expr::Expr::<T>::Select(dml::SelectStmt{
     fields,
