@@ -33,6 +33,7 @@ impl Error {
 }
 
 impl StdError for Error {
+    #[allow(clippy::manual_map)]
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self.0.source {
             Some(ref e) => Some(e.as_ref()),

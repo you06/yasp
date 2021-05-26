@@ -14,8 +14,7 @@ pub trait DatumTrait: Display + Debug + Clone {
     fn from_raw(raw: &str) -> Self {
         let l = raw.len();
         println!("raw: {}, l: {}", raw, l);
-        if raw.chars().nth(0_usize).unwrap() == '"'
-            && raw.chars().nth((l - 1) as usize).unwrap() == '"'
+        if raw.starts_with('"') && raw.chars().nth((l - 1) as usize).unwrap() == '"'
         {
             let inner = &raw[1..l - 1];
             if let Ok(d) = inner.parse::<humantime::Duration>() {
