@@ -47,6 +47,10 @@ Semicolon<T>: Vec<T> = {
     }
 };
 
+Parentheses<T>: T = {
+    "(" <v: T> ")" => v
+};
+
 /// basic identities
 Name: &'input str = {
     r"\w+" => <>,
@@ -61,6 +65,7 @@ Field: dml::Field = {
     "*" => dml::Field::new_all(),
     Column => dml::Field::new_column(<>),
     <table: Table>"."<column: Column> => dml::Field::new_column(column).with_table(table),
+    // Parentheses<Expr> => expr::Expr,
 };
 
 Fields = Comma<Field>;
